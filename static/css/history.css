@@ -1,0 +1,75 @@
+.content-section {
+    padding: 20px;
+    margin-top: 80px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #eee;
+    padding: 15px;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.status-badge.pending {
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.status-badge.approved {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.status-badge.rejected {
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+h2 {
+    color: #1D5698;
+    font-size: 2rem;
+    padding: 1rem;
+    font-weight: 800;
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approved Doctors - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('admin_approved_doctors') }}" class="active">Approved Doctors</a></li>
+            <li><a href="{{ url_for('admin_patients') }}">Patients</a></li>
+            <li style="margin-top: 50px;"><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>Approved Doctors</h1>
+        <div class="card">
+            {% if approved_doctors %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Specialization</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doctor in approved_doctors %}
+                    <tr>
+                        <td>{{ doctor.full_name }}</td>
+                        <td>{{ doctor.user.email }}</td>
+                        <td>{{ doctor.specialization }}</td>
+                        <td>{{ doctor.phone or 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No approved doctors found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

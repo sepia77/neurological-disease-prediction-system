@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+
+<body>
+
+  <div class="form-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="alert {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    <form action="{{ url_for('login') }}" method="POST">
+      <h3>Login</h3>
+
+      <input type="email" name="email" placeholder="Email" required class="box">
+      <input type="password" name="password" placeholder="Password" required class="box">
+
+      <button type="submit" class="btn">Login</button>
+
+      <p class="switch-text">
+        Don’t have an account?
+        <a href="#" onclick="showRegister()">Register</a>
+      </p>
+
+      <input type="button" class="login_google" value="Login with Google"
+        onclick="window.location.href='/login/google';">
+
+
+    </form>
+
+
+    <!-- REGISTER FORM -->
+    <form action="{{ url_for('register') }}" method="POST" id="register-form" style="display:none;"
+      enctype="multipart/form-data">
+      <h3>Register</h3>
+
+      <input type="text" name="username" placeholder="Full Name / Username" required class="box">
+      <input type="email" name="email" placeholder="Email" required class="box">
+      <input type="password" name="password" placeholder="Password" required class="box">
+
+      <select name="role" class="box" required onchange="toggleDoctorFields(this)">
+        <option value="Patient">Patient</option>
+        <option value="Doctor">Doctor</option>
+      </select>
+
+      <div id="doctor-fields" style="display: none;">
+        <input type="text" name="specialization" placeholder="Specialization (Job Title)" class="box">
+        <input type="text" name="qualification" placeholder="Qualification" class="box">
+        <input type="number" name="experience_years" placeholder="Years of Experience" class="box" min="0">
+        <input type="text" name="phone" placeholder="Phone Number (10 digits)" class="box" pattern="\d{10}"
+          title="Please enter exactly 10 digits">
+        <label for="image" style="display:block; text-align:left; margin-top:10px; color:#666;">Profile Image:</label>
+        <input type="file" name="image" class="box" accept="image/*">
+        <textarea name="description" placeholder="Brief Description" class="box" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn">Register</button>
+
+      <p class="switch-text">
+        Already have an account?
+        <a href="#" onclick="showLogin()">Login</a>
+      </p>
+    </form>
+
+  </div>
+
+  <script>
+    function showRegister() {
+      document.querySelectorAll("form")[0].style.display = "none";
+      document.getElementById("register-form").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("register-form").style.display = "none";
+      document.querySelectorAll("form")[0].style.display = "block";
+    }
+
+    function toggleDoctorFields(selectElement) {
+      var doctorFields = document.getElementById("doctor-fields");
+      if (selectElement.value === "Doctor") {
+        doctorFields.style.display = "block";
+        doctorFields.querySelectorAll('input, textarea').forEach(el => el.required = true);
+      } else {
+        doctorFields.style.display = "none";
+        doctorFields.querySelectorAll('input, textarea').forEach(el => el.required = false);
+      }
+    }
+
+    // Auto-hide alerts
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function (alert) {
+          alert.style.transition = 'opacity 0.6s ease';
+          alert.style.opacity = '0';
+          setTimeout(function () { alert.remove(); }, 600);
+        });
+      }, 3000);
+    });
+  </script>
+
+</body>
+
+</html>

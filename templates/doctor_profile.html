@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Doctor</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/doctor_dashboard.css') }}">
+    <style>
+        .profile-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .current-image img {
+            width: 150px;
+            height: 180px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid #598DAE;
+        }
+
+        .btn-primary {
+            background-color: #598DAE;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #416b86;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Doctor Dashboard</h2>
+        <ul>
+            <li><a href="{{ url_for('doctor_dashboard') }}">Overview</a></li>
+            <li><a href="{{ url_for('doctor_requests') }}">Appointment Requests</a></li>
+            <li><a href="{{ url_for('doctor_calendar') }}">Calendar</a></li>
+            <li><a href="{{ url_for('doctor_profile') }}" class="active">User Profile</a></li>
+            <li style="margin-top: 50px;"><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="profile-container">
+            <h2 style="color: #467BBD; margin-top: 0;">Edit Profile</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                <div class="current-image">
+                    {% if doctor.image_file %}
+                    <img src="{{ url_for('static', filename='images/profile_pics/' + doctor.image_file) }}"
+                        alt="Profile Picture">
+                    {% else %}
+                    <div
+                        style="width: 150px; height: 180px; background: #ddd; border-radius: 12px; display: inline-block; line-height: 180px; color: #7f8c8d;">
+                        No Image</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Profile Image</label>
+                    <input type="file" name="image" accept="image/*">
+                    <small style="color: #666;">(Leave empty to keep current image)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Specialization</label>
+                    <input type="text" name="specialization" value="{{ doctor.specialization or '' }}"
+                        placeholder="Cardiologist, General Physician, etc." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Qualification</label>
+                    <input type="text" name="qualification" value="{{ doctor.qualification or '' }}"
+                        placeholder="MBBS, MD, etc." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Years of Experience</label>
+                    <input type="number" name="experience_years" value="{{ doctor.experience_years or 0 }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number (10 digits)</label>
+                    <input type="text" name="phone" value="{{ doctor.phone or '' }}" pattern="\d{10}"
+                        title="Please enter exactly 10 digits" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description (Bio)</label>
+                    <textarea name="description" rows="4" required>{{ doctor.description or '' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide alerts
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    alert.style.transition = 'opacity 0.6s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(function () { alert.remove(); }, 600);
+                });
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>

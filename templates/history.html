@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment History</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/patient_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            flex: 1;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="navbar">
+        <div class="nav-left">
+            <ul>
+                <li><a href="{{ url_for('patient_dashboard') }}">Home</a></li>
+                <li><a href="/appointment">Book Appointment</a></li>
+                <li><a href="{{ url_for('patient_dashboard') }}#diseases-info">Diseases</a></li>
+                <li>
+                    <a href="#">Detection </a>
+                    <div class="dropdown-content">
+                        <a href="/detect_tumor">Brain Tumor</a>
+                        <a href="/detect_alzheimer">Alzheimer's</a>
+                        <a href="/detect_parkinson">Parkinson's</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li>
+                    <a href="#"><i class="ri-user-3-fill"></i> </a>
+                    <div class="dropdown-content">
+                        <a href="/history">History</a>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="margin-top: 80px; padding: 0 20px;">
+        {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="content-section" id="history">
+        <h2>My Appointment History</h2>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td>{{ appt.doctor.full_name }}</td>
+                        <td>{{ appt.appointment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ appt.reason }}</td>
+                        <td>
+                            <span class="status-badge {{ appt.status }}">{{ appt.status }}</span>
+                        </td>
+                        <td>
+                            {% if appt.status in ['pending', 'approved'] %}
+                            <form method="POST" action="{{ url_for('cancel_appointment', appointment_id=appt.id) }}"
+                                style="display:inline;">
+                                <button type="submit" class="btn-cancel"
+                                    onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</button>
+                            </form>
+                            {% elif appt.status == 'cancelled' %}
+                            <span style="color: grey;">Cancelled</span>
+                            {% else %}
+                            <span>-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No appointments found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2 style="margin-top: 5rem;">My Scan History</h2>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Scan Type</th>
+                        <th>Date</th>
+                        <th>Result</th>
+                        <th>Confidence</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for scan in scans %}
+                    <tr>
+                        <td>{{ scan.scan_type }}</td>
+                        <td>{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td><strong>{{ scan.result }}</strong></td>
+                        <td>{{ scan.confidence }}</td>
+                        <td>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                {% if scan.image_path %}
+                                <a href="{{ scan.image_path }}" target="_blank" class="btn-view"
+                                    style="text-decoration: none; color: #467BBD; font-size: 1.2rem;"
+                                    title="View Image">
+                                    <i class="ri-image-line"></i>
+                                </a>
+                                {% endif %}
+                                <button class="btn-pdf-small"
+                                    style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem;"
+                                    title="Download PDF" data-scan-id="{{ scan.id }}"
+                                    data-scan-type="{{ scan.scan_type }}" data-scan-result="{{ scan.result }}"
+                                    data-scan-confidence="{{ scan.confidence }}" data-scan-image="{{ scan.image_path }}"
+                                    data-scan-date="{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}"
+                                    onclick="handleDownloadPDF(this)">
+                                    <i class="ri-file-pdf-line"></i>
+                                </button>
+                                <form method="POST" action="{{ url_for('delete_scan', scan_id=scan.id) }}"
+                                    style="display:inline;">
+                                    <button type="submit"
+                                        style="background: none; border: none; color: #6c757d; cursor: pointer; font-size: 1.2rem;"
+                                        onclick="return confirm('Delete this scan record?')" title="Delete Record">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No scan results found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="footer-content" id="footer">
+            <p>&copy; Neurological Disease Prediction System</p>
+            <div class="footer-links">
+                <a href="#footer">Privacy Policy</a>
+                <a href="#footer">Terms of Service</a>
+                <a href="#footer">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-hide flash messages
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    alert.style.transition = 'opacity 0.6s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(function () { alert.remove(); }, 600);
+                });
+            }, 3000);
+        });
+
+        function handleDownloadPDF(btn) {
+            const data = btn.dataset;
+            downloadScanPDF(
+                data.scanId,
+                data.scanType,
+                data.scanResult,
+                data.scanConfidence,
+                data.scanImage,
+                data.scanDate
+            );
+        }
+
+        function downloadScanPDF(id, type, result, confidence, imgPath, date) {
+            const opt = {
+                margin: 0.5,
+                filename: `MRI_Report_${date.replace(/[: ]/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            const container = document.createElement('div');
+            container.style.padding = '40px';
+            container.style.fontFamily = 'Arial, sans-serif';
+            container.innerHTML = `
+                <div style="text-align: center; border-bottom: 2px solid #467BBD; padding-bottom: 20px; margin-bottom: 30px;">
+                    <h1 style="color: #467BBD; margin: 0;">MRI SCAN REPORT</h1>
+                    <p style="color: #666;">Generated on ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin-bottom: 30px; background: #f8fbff; padding: 20px; border-radius: 10px; border-left: 5px solid #467BBD;">
+                    <h2 style="margin-top: 0; color: #333;">Prediction Results</h2>
+                    <p><strong>Scan Type:</strong> ${type}</p>
+                    <p><strong>Date:</strong> ${date}</p>
+                    <p><strong>Result:</strong> <span style="font-size: 1.2rem; color: #467BBD;">${result}</span></p>
+                    <p><strong>Confidence:</strong> ${confidence}</p>
+                </div>
+                ${imgPath ? `
+                <div style="text-align: center;">
+                    <h3 style="color: #555;">MRI Scan Image</h3>
+                    <img src="${imgPath}" style="max-width: 100%; border-radius: 10px; border: 3px solid #f0f0f0;" />
+                </div>
+                ` : ''}
+                <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #888; text-align: center;">
+                    <p>This is a computer-generated report based on AI analysis. Please consult a qualified radiologist for clinical diagnosis.</p>
+                </div>
+            `;
+
+            html2pdf().set(opt).from(container).save();
+        }
+    </script>
+</body>
+
+</html>

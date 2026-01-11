@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Requests - Doctor</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/doctor_dashboard.css') }}">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Doctor Dashboard</h2>
+        <ul>
+            <li><a href="{{ url_for('doctor_dashboard') }}">Overview</a></li>
+            <li><a href="{{ url_for('doctor_requests') }}" class="active">Appointment Requests</a></li>
+            <li><a href="{{ url_for('doctor_calendar') }}">Calendar</a></li>
+            <li><a href="{{ url_for('doctor_profile') }}">User Profile</a></li>
+            <li style="margin-top: 50px;"><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h2 style="margin-bottom: 20px;">Appointment Requests</h2>
+
+        {% if appointments %}
+        {% for appointment in appointments %}
+        <div class="appointment-card">
+            <div class="info">
+                <h3 style="margin: 0 0 10px 0; color: #2c3e50;">{{ appointment.patient.full_name }}</h3>
+                <p style="margin: 5px 0;"><strong>Date:</strong> {{ appointment.appointment_date.strftime('%B %d, %Y at
+                    %I:%M %p') }}</p>
+                <p style="margin: 5px 0;"><strong>Reason:</strong> {{ appointment.reason }}</p>
+                {% if appointment.patient.phone %}
+                <p style="margin: 5px 0;"><strong>Contact:</strong> {{ appointment.patient.phone }}</p>
+                {% endif %}
+            </div>
+
+            <div class="actions">
+                <span class="status-badge {{ appointment.status }}">{{ appointment.status }}</span>
+
+                {% if appointment.status == 'pending' %}
+                <div style="margin-top: 10px;">
+                    <form method="POST" action="{{ url_for('approve_appointment', appointment_id=appointment.id) }}"
+                        style="display: inline;">
+                        <button type="submit" class="btn-success">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('reject_appointment', appointment_id=appointment.id) }}"
+                        style="display: inline;">
+                        <button type="submit" class="btn-danger">Reject</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No appointments found.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>

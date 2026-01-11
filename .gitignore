@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+
+# Environment & secrets
+.env
+api.key.py
+
+# Flask
+instance/
+
+# Uploads & user data
+uploads/
+
+# Databases
+*.db
+*.sqlite3
+
+# ML cache & temp
+.ipynb_checkpoints/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log

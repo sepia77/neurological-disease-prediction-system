@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/patient_dashboard.css') }}">
+    <style>
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-hide alerts after 3 seconds
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    alert.style.transition = 'opacity 0.6s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(function () { alert.remove(); }, 600);
+                });
+            }, 3000);
+        });
+    </script>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="nav-left">
+            <ul>
+                <li><a href="{{ url_for('patient_dashboard') }}">Home</a></li>
+                <li><a href="/appointment">Book Appointment</a></li>
+                <li><a href="#diseases-info">Diseases</a></li>
+                <li>
+                    <a href="#">Detection </a>
+                    <div class="dropdown-content">
+                        <a href="/detect_tumor">Brain Tumor</a>
+                        <a href="/detect_alzheimer">Alzheimer's</a>
+                        <a href="/detect_parkinson">Parkinson's</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li>
+                    <a href="#"><i class="ri-user-3-fill"></i> </a>
+                    <div class="dropdown-content">
+                        <a href="/history">History</a>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="margin-top: 80px; padding: 0 80px;">
+        {% for category, message in messages %}
+        <div class="alert {{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="container hero-container">
+        <div class="text-section">
+            <h4>Welcome, {{ username|capitalize }}</h4>
+            <p>Book consultations with leading neurological doctors.</p>
+            <p>Access AI-supported diagnostic assistance for early assessment.</p>
+
+            <a href="/appointment" class="btn-hero">Make Appointment <i class="ri-arrow-right-line"></i></a>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <div class="action-card">
+            <i class="ri-scan-line"></i>
+            <h3>AI Screening</h3>
+            <p>Start a preliminary neurological assessment.</p>
+            <a href="/detect_tumor" class="btn-action">Start Screening</a>
+        </div>
+        <div class="action-card">
+            <i class="ri-calendar-check-line"></i>
+            <h3>Book Appointment</h3>
+            <p>Schedule a consultation with a specialist.</p>
+            <a href="/appointment" class="btn-action">Book Now</a>
+        </div>
+        <div class="action-card">
+            <i class="ri-information-line"></i>
+            <h3>Learn About Diseases</h3>
+            <p>Explore information about neurological conditions.</p>
+            <a href="#diseases-info" class="btn-action">Read More</a>
+        </div>
+    </div>
+
+
+    <!-- Diseases Information Section -->
+    <div id="diseases-info" style="padding: 60px 20px;">
+        <h2 style="text-align: center; font-size: 3rem; color: #467BBD; margin-bottom: 30px;">Neurological Diseases</h2>
+
+        <div class="disease-mini-nav">
+            <a href="#brain-tumor">Brain Tumor</a>
+            <span class="nav-separator">|</span>
+            <a href="#alzheimers">Alzheimer's</a>
+            <span class="nav-separator">|</span>
+            <a href="#parkinsons">Parkinson's</a>
+            <span class="nav-separator">|</span>
+            <a href="#epilepsy">Epilepsy</a>
+            <span class="nav-separator">|</span>
+            <a href="#stroke">Stroke</a>
+            <span class="nav-separator">|</span>
+            <a href="#ms">Multiple Sclerosis</a>
+        </div>
+
+        <!-- Brain Tumor -->
+        <div id="brain-tumor" class="disease-card">
+            <div class="disease-header">
+                <div class="disease-header-content">
+                    <h3>Brain Tumor</h3>
+                    <p>
+                        A brain tumor is a mass of abnormally growing cells in the brain or skull. It can be benign
+                        (noncancerous) or malignant (cancerous).
+                        Tumors may compress and damage brain structures, causing neurological symptoms. Brain tumors can
+                        affect
+                        adults and children and may be primary (originating in the brain) or secondary (metastatic,
+                        spreading
+                        from other organs).
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='images/braintumor.jpg') }}" alt="Brain Tumor"
+                    class="disease-header-image" onerror="this.onerror=null;this.style.display='none'">
+            </div>
+
+            <div class="disease-body">
+                <div class="disease-info-grid">
+                    <div class="info-box">
+                        <strong>Causes</strong>
+                        <ul>
+                            <li>Primary brain tumors: abnormal growth of cells within brain tissue</li>
+                            <li>Secondary (metastatic) tumors: spread of cancer from lungs, breast, kidney, skin
+                                (melanoma), or
+                                lymphatic system</li>
+                            <li>Genetic or hereditary factors</li>
+                            <li>Exposure to certain chemicals or radiation (still under study)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Stages / Progression</strong>
+                        <ul>
+                            <li>Primary tumors are classified by tissue type and aggressiveness (e.g., gliomas,
+                                medulloblastomas, meningiomas)</li>
+                            <li>Secondary tumors depend on the original cancer and its spread to the brain</li>
+                            <li>Tumor growth may cause increasing pressure, swelling, and damage to nearby brain tissue
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Symptoms</strong>
+                        <ul>
+                            <li>Headaches, often worse in the morning</li>
+                            <li>Seizures or new-onset convulsions</li>
+                            <li>Weakness on one side of the body</li>
+                            <li>Speech difficulties or changes</li>
+                            <li>Loss of coordination and balance</li>
+                            <li>Vision changes or abnormal eye movements</li>
+                            <li>Memory or personality changes</li>
+                            <li>Ringing or hearing loss in one ear</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Diagnosis</strong>
+                        <ul>
+                            <li>Medical history and neurological exam (reflexes, coordination, eyesight, alertness)</li>
+                            <li>Imaging: MRI (detailed brain structure), CT scan, PET scan</li>
+                            <li>Lumbar puncture (spinal tap) for cancer or infection detection</li>
+                            <li>Biopsy to confirm tumor type in select cases</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Treatment</strong>
+                        <ul>
+                            <li>Surgery to remove tumors when feasible, including stereotactic surgery for deep-seated
+                                tumors
+                            </li>
+                            <li>Radiation therapy (e.g., Gamma Knife, CyberKnife) to destroy remaining tumor cells</li>
+                            <li>Chemotherapy for specific tumors like lymphomas and medulloblastomas</li>
+                            <li>Supportive medications: corticosteroids for swelling, anticonvulsants for seizures</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 30px;">
+                    <a href="/detect_tumor" class="btn-detect-ai">
+                        <i class="ri-brain-line"></i> Detect with AI
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alzheimer's Disease -->
+        <div id="alzheimers" class="disease-card">
+            <div class="disease-header">
+                <div class="disease-header-content">
+                    <h3>Alzheimer's Disease & Dementia</h3>
+                    <p>
+                        Alzheimer's disease is the most common form of dementia, accounting for 60% to 80% of all
+                        dementia cases.
+                        It is a progressive neurodegenerative disorder affecting memory, cognition, behavior, and daily
+                        functioning.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='images/alzheimer.jpg') }}" alt="Alzheimer's Disease"
+                    class="disease-header-image" onerror="this.style.display='none'">
+            </div>
+
+            <div class="disease-body">
+                <div class="disease-info-grid">
+                    <div class="info-box">
+                        <strong>Causes & Risk Factors</strong>
+                        <ul>
+                            <li>Amyloid-beta plaques and tau protein tangles in the brain</li>
+                            <li>Brain atrophy due to neuronal damage</li>
+                            <li>Age, genetics, and family history</li>
+                            <li>Cardiovascular conditions and lifestyle factors</li>
+                            <li>Mixed pathologies (overlap of Alzheimer's and other dementia types)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Stages of Alzheimer's</strong>
+                        <ul>
+                            <li><strong>Preclinical Stage:</strong> Brain changes without noticeable symptoms</li>
+                            <li><strong>Mild Cognitive Impairment:</strong> Memory or thinking issues not severely
+                                affecting daily life</li>
+                            <li><strong>Mild Alzheimer's:</strong> Memory lapses, difficulty with planning, trouble
+                                recalling names</li>
+                            <li><strong>Moderate Alzheimer's:</strong> Increased confusion, difficulty recognizing loved
+                                ones, sleep changes</li>
+                            <li><strong>Severe Alzheimer's:</strong> Loss of ability to communicate and complete daily
+                                tasks, full-time care required</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Common Symptoms</strong>
+                        <ul>
+                            <li>Memory loss disrupting daily activities</li>
+                            <li>Difficulty planning or solving problems</li>
+                            <li>Confusion with time or place</li>
+                            <li>Challenges completing familiar tasks</li>
+                            <li>Mood or personality changes</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Diagnosis & MRI Role</strong>
+                        <ul>
+                            <li>MRI helps detect structural brain changes like hippocampal atrophy, ventricular
+                                enlargement, and cortical thinning</li>
+                            <li>Differentiates Alzheimer's from other dementias (e.g., vascular, Lewy body,
+                                frontotemporal)</li>
+                            <li>Functional MRI (fMRI) evaluates brain activity and neural network disruptions</li>
+                            <li>Diffusion Tensor Imaging (DTI) detects early white matter changes and connectivity
+                                disruptions</li>
+                            <li>Serial MRI scans monitor disease progression and treatment efficacy</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Importance of Early Detection</strong>
+                        <p>
+                            Early identification allows timely interventions, symptom management, care planning, and
+                            improved quality of life for patients and caregivers.
+                        </p>
+                    </div>
+                </div>
+
+
+
+                <div style="text-align: right; margin-top: 30px;">
+                    <a href="/detect_alzheimer" class="btn-detect-ai">
+                        <i class="ri-brain-line"></i> Detect with AI
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Parkinson's Disease -->
+        <div id="parkinsons" class="disease-card">
+            <div class="disease-header">
+                <div class="disease-header-content">
+                    <h3>Parkinson's Disease</h3>
+                    <p>
+                        Parkinson's disease (PD) is a progressive disorder of the central nervous system that affects
+                        movement.
+                        It occurs when dopamine-producing neurons in the brain die, causing muscle rigidity, tremors,
+                        slowed
+                        movement, and postural instability.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='images/parkinsons.jpg') }}" alt="Parkinson's Disease"
+                    class="disease-header-image" onerror="this.onerror=null;this.style.display='none'">
+            </div>
+
+            <div class="disease-body">
+                <div class="disease-info-grid">
+                    <div class="info-box">
+                        <strong>Causes</strong>
+                        <ul>
+                            <li>Death of dopamine-producing neurons in the brain</li>
+                            <li>Genetic factors: having a parent or sibling diagnosed at a younger age increases risk
+                            </li>
+                            <li>Environmental factors: exact triggers are not fully known</li>
+                            <li>Age: most people are diagnosed around 70 years old; early-onset PD is rare</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Stages / Progression</strong>
+                        <ul>
+                            <li>Early stage: slight tremor or stiffness, usually in one limb, "pill-rolling" tremor</li>
+                            <li>Middle stage: tremors spread, bradykinesia (slowed movements) becomes more noticeable,
+                                posture
+                                changes, small shuffling steps</li>
+                            <li>Advanced stage: difficulty with daily activities, balance problems, rigidity, widespread
+                                tremors, facial expression reduction</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Symptoms</strong>
+                        <ul>
+                            <li>Tremor, especially at rest, often beginning in thumb and index finger</li>
+                            <li>Muscle rigidity and stiffness</li>
+                            <li>Slowed body movements (bradykinesia)</li>
+                            <li>Unstable posture and balance problems</li>
+                            <li>Shuffling walk and stooped posture</li>
+                            <li>Reduced facial expressions, decreased blinking</li>
+                            <li>Speech changes: soft or slurred</li>
+                            <li>Other possible symptoms: depression, anxiety, disturbed sleep, memory loss, difficulty
+                                swallowing, constipation, bladder issues, temperature regulation problems, sexual
+                                dysfunction
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Diagnosis</strong>
+                        <ul>
+                            <li>Neurological examination focusing on tremor, rigidity, movement speed, and gait</li>
+                            <li>No single lab test; diagnosis is based on symptoms and exam</li>
+                            <li>Improvement with PD medication supports the diagnosis</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Treatment</strong>
+                        <ul>
+                            <li>Medications to increase or mimic dopamine: Levodopa/Carbidopa, MAO-B inhibitors,
+                                dopamine agonists, COMT inhibitors, anticholinergics, amantadine.</li>
+                            <li>Advanced therapies: Levodopa-carbidopa intestinal gel, continuous apomorphine or
+                                foslevodopa-foscarbidopa infusions.</li>
+                            <li>Surgery: Deep brain stimulation (DBS) or targeted lesioning for severe cases.</li>
+                            <li>Supportive care: Physical and occupational therapy, plus management of symptoms like
+                                depression and sleep disturbances.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 30px;">
+                    <a href="/detect_parkinson" class="btn-detect-ai">
+                        <i class="ri-brain-line"></i> Detect with AI
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Other Neurological Diseases -->
+        <!-- Epilepsy -->
+        <div id="epilepsy" class="disease-card">
+            <div class="disease-header">
+                <div class="disease-header-content">
+                    <h3>Epilepsy</h3>
+                    <p>
+                        Epilepsy is a chronic neurological disorder characterized by recurring seizures caused by
+                        abnormal
+                        electrical activity in the brain.
+                        Seizures can involve changes in awareness, sensations, emotions, behavior, and muscle movements.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='images/epilepsy.webp') }}" alt="Epilepsy"
+                    class="disease-header-image" onerror="this.onerror=null;this.style.display='none'">
+            </div>
+
+            <div class="disease-body">
+                <div class="disease-info-grid">
+                    <div class="info-box">
+                        <strong>Causes</strong>
+                        <ul>
+                            <li>Unknown in 70% of cases</li>
+                            <li>Genetic factors: certain types run in families (juvenile myoclonic epilepsy, childhood
+                                absence
+                                epilepsy)</li>
+                            <li>Brain abnormalities: birth defects, malformations, mesial temporal sclerosis</li>
+                            <li>Head injuries from accidents or falls</li>
+                            <li>Brain infections: meningitis, encephalitis, neurocysticercosis</li>
+                            <li>Immune disorders: autoimmune attacks on brain cells</li>
+                            <li>Metabolic disorders: conditions affecting energy production in brain cells</li>
+                            <li>Brain conditions: tumors, strokes, abnormal blood vessels</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Types / Stages</strong>
+                        <ul>
+                            <li><strong>Focal onset seizures</strong>: begin in one part of the brain
+                                <ul style="margin-top: 5px;">
+                                    <li>Focal aware: consciousness preserved; sensory, emotional or motor changes</li>
+                                    <li>Focal impaired awareness: loss or change of consciousness; repetitive movements,
+                                        staring
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>Generalized onset seizures</strong>: affect both sides of the brain
+                                <ul style="margin-top: 5px;">
+                                    <li>Absence seizures: brief staring, often in children</li>
+                                    <li>Tonic seizures: muscle stiffening, possible falls</li>
+                                    <li>Atonic seizures: sudden loss of muscle control (“drop seizures”)</li>
+                                    <li>Clonic seizures: repeated jerking movements</li>
+                                    <li>Tonic-clonic seizures: stiffening followed by rhythmic jerking, loss of
+                                        consciousness
+                                    </li>
+                                    <li>Myoclonic seizures: brief shock-like jerks of muscles</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Symptoms</strong>
+                        <ul>
+                            <li>Recurring seizures: muscle jerks, loss of muscle tone, blank stare</li>
+                            <li>Temporary confusion, slowed thinking, or problems with communication</li>
+                            <li>Sensory changes: hearing, vision, taste, smell, numbness or tingling</li>
+                            <li>Emotional or psychic symptoms: fear, déjà vu, anxiety</li>
+                            <li>Autonomic signs: upset stomach, goosebumps, waves of heat or cold</li>
+                            <li>Repetitive movements: lip-smacking, chewing, hand rubbing</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Diagnosis</strong>
+                        <ul>
+                            <li>Based on at least two unprovoked seizures occurring 24+ hours apart</li>
+                            <li>Medical history, eyewitness accounts, physical and neurological exam</li>
+                            <li>Tests:
+                                <ul style="margin-top: 5px;">
+                                    <li>Electroencephalography (EEG) to detect abnormal brain electrical activity</li>
+                                    <li>Brain imaging (MRI) to check for tumors, lesions, or vascular abnormalities</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Treatment & Management</strong>
+                        <ul>
+                            <li><strong>Medications:</strong> Anti-seizure drugs (choice depends on seizure type, age,
+                                response,
+                                other conditions)</li>
+                            <li><strong>Diet therapy:</strong> Ketogenic or modified Atkins diets for children with
+                                drug-resistant epilepsy</li>
+                            <li><strong>Surgery or devices:</strong> Removal of abnormal tissue, disconnecting fiber
+                                bundles,
+                                radiosurgery, or neuromodulation devices</li>
+                            <li>Managing triggers: stress reduction, proper sleep, avoiding alcohol, maintaining healthy
+                                diet
+                                and hydration</li>
+                            <li>Emergency measures: call 911 for seizures lasting >5 minutes, repeated seizures, or if
+                                injuries
+                                occur</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Stroke -->
+        <!-- Stroke -->
+        <div id="stroke" class="disease-card">
+            <div class="disease-header">
+                <div class="disease-header-content">
+                    <h3>Stroke</h3>
+                    <p>
+                        A stroke occurs when the blood supply to part of the brain is blocked or reduced, depriving
+                        brain
+                        tissue
+                        of oxygen and nutrients.
+                        Brain cells begin to die within minutes. Strokes are a medical emergency; immediate treatment
+                        can
+                        reduce
+                        brain damage and complications.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='images/stroke.jpg') }}" alt="Stroke"
+                    class="disease-header-image" onerror="this.onerror=null;this.style.display='none'">
+            </div>
+
+            <div class="disease-body">
+                <div class="disease-info-grid">
+                    <div class="info-box">
+                        <strong>Types of Stroke</strong>
+                        <ul>
+                            <li><strong>Ischemic Stroke:</strong> Caused by blocked or narrowed brain blood vessels,
+                                often
+                                due
+                                to clots or fatty deposits.</li>
+                            <li><strong>Hemorrhagic Stroke:</strong> Caused by a blood vessel in the brain leaking or
+                                rupturing,
+                                increasing pressure on brain cells.</li>
+                            <li><strong>Transient Ischemic Attack (TIA):</strong> A temporary, ministroke-like event
+                                caused
+                                by
+                                brief blockage, without permanent damage.</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Symptoms</strong>
+                        <ul>
+                            <li>Trouble speaking or understanding speech</li>
+                            <li>Numbness, weakness, or paralysis, usually on one side of the body</li>
+                            <li>Vision problems in one or both eyes</li>
+                            <li>Sudden severe headache, sometimes with vomiting or dizziness</li>
+                            <li>Loss of balance or coordination</li>
+                            <li>Think "FAST": Face drooping, Arm weakness, Speech difficulty, Time to call 911</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Causes</strong>
+                        <ul>
+                            <li>Ischemic stroke: Blocked arteries due to clots or fatty deposits</li>
+                            <li>Hemorrhagic stroke: Blood vessel rupture, high blood pressure, aneurysms, trauma, or
+                                vascular
+                                abnormalities</li>
+                            <li>Transient ischemic attack: Temporary blockage of blood flow to the brain</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Risk Factors</strong>
+                        <ul>
+                            <li>High blood pressure, high cholesterol, and diabetes</li>
+                            <li>Obesity, physical inactivity, smoking, heavy alcohol use</li>
+                            <li>Heart disease, irregular heartbeat (atrial fibrillation)</li>
+                            <li>Family history of stroke, prior TIA, or heart attack</li>
+                            <li>Age ≥55, male sex, certain racial/ethnic groups</li>
+                            <li>Hormone therapy or birth control pills</li>
+                            <li>Recent COVID-19 infection may increase ischemic stroke risk</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Complications</strong>
+                        <ul>
+                            <li>Paralysis or loss of muscle control, often on one side</li>
+                            <li>Speech, swallowing, or language difficulties</li>
+                            <li>Memory, thinking, or reasoning problems</li>
+                            <li>Emotional changes, depression, or mood swings</li>
+                            <li>Pain, numbness, or tingling in affected areas</li>
+                            <li>Changes in behavior or self-care ability</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Prevention & Healthy Lifestyle</strong>
+                        <ul>
+                            <li>Control blood pressure and cholesterol levels</li>
+                            <li>Quit smoking and avoid illicit drugs</li>
+                            <li>Maintain healthy weight and exercise regularly</li>
+                            <li>Eat a diet rich in fruits, vegetables, and whole grains</li>
+                            <li>Drink alcohol only in moderation</li>
+                            <li>Manage diabetes and treat sleep apnea</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Preventive & Medical Treatments</strong>
+                        <ul>
+                            <li>Anti-platelet drugs (e.g., aspirin, clopidogrel) to prevent clots</li>
+                            <li>Anticoagulants (e.g., warfarin, heparin, dabigatran, rivaroxaban) to reduce blood
+                                clotting
+                            </li>
+                            <li>Immediate emergency care for ischemic or hemorrhagic stroke</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Multiple Sclerosis -->
+        <!-- Multiple Sclerosis -->
+        <div id="ms" class="disease-card">
+            <div class="disease-header">
+                <div class="disease-header-content">
+                    <h3>Multiple Sclerosis (MS)</h3>
+                    <p>
+                        Multiple sclerosis is a chronic disease in which the immune system attacks the protective myelin
+                        covering of nerve fibers.
+                        This disrupts communication between the brain and the rest of the body and can lead to permanent
+                        nerve
+                        damage over time.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='images/sclerosis.webp') }}" alt="Multiple Sclerosis"
+                    class="disease-header-image" onerror="this.onerror=null;this.style.display='none'">
+            </div>
+
+            <div class="disease-body">
+                <div class="disease-info-grid">
+                    <div class="info-box">
+                        <strong>Causes</strong>
+                        <p>
+                            The exact cause of MS is unknown. It is considered an immune-mediated disease where the
+                            body’s
+                            immune system attacks myelin,
+                            the protective fatty layer around nerves, slowing or blocking nerve signals.
+                        </p>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Risk Factors</strong>
+                        <ul>
+                            <li>Age: Most commonly between 20–40 years old</li>
+                            <li>Sex: Women are 2–3 times more likely than men</li>
+                            <li>Family history: Higher risk if a parent or sibling has MS</li>
+                            <li>Infections: Linked to viruses like Epstein-Barr</li>
+                            <li>Race: Highest risk in people of Northern European descent</li>
+                            <li>Climate: More common in temperate climates</li>
+                            <li>Vitamin D deficiency or low sunlight exposure</li>
+                            <li>Obesity, smoking, other autoimmune diseases, and gut microbiome differences</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Types of MS</strong>
+                        <ul>
+                            <li><strong>Relapsing-remitting MS:</strong> Periods of new or worsening symptoms (relapses)
+                                followed by remission</li>
+                            <li><strong>Secondary-progressive MS:</strong> Steady progression of symptoms after
+                                relapsing-remitting MS, with or without remission</li>
+                            <li><strong>Primary-progressive MS:</strong> Gradual progression of symptoms from onset
+                                without
+                                relapses</li>
+                            <li><strong>Clinically isolated syndrome:</strong> First episode affecting myelin, may later
+                                be
+                                diagnosed as MS</li>
+                            <li><strong>Radiologically isolated syndrome:</strong> MRI findings suggest MS without
+                                classic
+                                symptoms</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Symptoms</strong>
+                        <ul>
+                            <li>Numbness or tingling in limbs</li>
+                            <li>Electric-shock sensations with neck movement (Lhermitte sign)</li>
+                            <li>Weakness and lack of coordination</li>
+                            <li>Trouble walking or complete immobility</li>
+                            <li>Partial or complete loss of vision, double or blurry vision</li>
+                            <li>Dizziness, vertigo, and balance problems</li>
+                            <li>Fatigue, slurred speech, memory or cognitive issues</li>
+                            <li>Trouble with sexual, bowel, or bladder function</li>
+                            <li>Mood changes like depression or anxiety</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Complications</strong>
+                        <ul>
+                            <li>Muscle stiffness or spasms</li>
+                            <li>Severe weakness or paralysis</li>
+                            <li>Seizures (rare)</li>
+                            <li>Bladder, bowel, or sexual dysfunction</li>
+                            <li>Memory, thinking, or cognitive issues</li>
+                            <li>Mood disorders such as depression or anxiety</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Diagnosis & Treatment</strong>
+                        <ul>
+                            <li>Diagnosis: Based on medical history, neurological exam, MRI, and sometimes lumbar
+                                puncture
+                            </li>
+                            <li>Treatment: No cure exists, but options include medications to slow disease progression,
+                                manage
+                                relapses, and alleviate symptoms</li>
+                            <li>Physical therapy, lifestyle changes, and symptom-specific therapies can improve quality
+                                of
+                                life
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+
+
+    <footer>
+        <div class="footer-content" id="footer">
+            <p>&copy; Neurological Disease Prediction System</p>
+            <div class="footer-links">
+                <a href="#footer">Privacy Policy</a>
+                <a href="#footer">Terms of Service</a>
+                <a href="#footer">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Auto-hide alerts after 3 seconds
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    alert.style.transition = 'opacity 0.6s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(function () { alert.remove(); }, 600);
+                });
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>

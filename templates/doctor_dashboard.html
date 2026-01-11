@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/doctor_dashboard.css') }}">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Doctor Dashboard</h2>
+        <ul>
+            <li><a href="{{ url_for('doctor_dashboard') }}" class="active">Overview</a></li>
+            <li><a href="{{ url_for('doctor_requests') }}">Appointment Requests</a></li>
+            <li><a href="{{ url_for('doctor_calendar') }}">Calendar</a></li>
+            <li><a href="{{ url_for('doctor_profile') }}">User Profile</a></li>
+            <li style="margin-top: 50px;"><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <h1>Hello, Dr. {{ username }}</h1>
+        <p style="margin-bottom: 30px; color: #666;">Here is an overview of your appointments.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ pending_count }}</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ approved_count }}</div>
+                <div class="stat-label">Approved Appointments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_count }}</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

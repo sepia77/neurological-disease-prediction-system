@@ -1,0 +1,96 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}" class="active">Dashboard</a></li>
+            <li><a href="{{ url_for('admin_approved_doctors') }}">Approved Doctors</a></li>
+            <li><a href="{{ url_for('admin_patients') }}">Patients</a></li>
+            <li style="margin-top: 50px;"><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <h1>Dashboard Overview</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ pending_doctors|length }}</div>
+                <div class="stat-label">Pending Doctors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ approved_count }}</div>
+                <div class="stat-label">Approved Doctors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ patients_count }}</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+        </div>
+
+        {% if pending_doctors %}
+        <div class="card mt-20">
+            <h2>Pending Doctor Approvals</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Specialization</th>
+                            <th>Qualification</th>
+                            <th>Experience</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doctor in pending_doctors %}
+                        <tr>
+                            <td>{{ doctor.full_name }}</td>
+                            <td>{{ doctor.user.email }}</td>
+                            <td>{{ doctor.specialization }}</td>
+                            <td>{{ doctor.qualification }}</td>
+                            <td>{{ doctor.experience_years }} years</td>
+                            <td class="actions-cell">
+                                <form method="POST" action="{{ url_for('approve_doctor', doctor_id=doctor.id) }}"
+                                    style="display: inline;">
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('reject_doctor', doctor_id=doctor.id) }}"
+                                    style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to reject this doctor?')">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <p>No pending approvals.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

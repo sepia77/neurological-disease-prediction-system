@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Mona Sans", sans-serif;
+    box-sizing: border-box;
+    outline: none;
+    border: none;
+    text-decoration: none;
+    transition: all .1s linear;
+}
+
+html {
+    font-size: 63%;
+    overflow-x: hidden;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    color: white;
+    font-size: 1.8rem;
+    border-radius: .5rem;
+    text-transform: capitalize;
+}
+
+.btn {
+    background-color: #1D5698;
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    color: white;
+    font-size: 1.8rem;
+    border-radius: .5rem;
+    text-transform: capitalize;
+    margin: 1vh;
+}
+
+.btn:hover {
+    background-color: #2f5079;
+}
+
+.form-container {
+    min-height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.form-container form {
+    padding: 5rem;
+    width: 50rem;
+    max-width: 100%;
+    border: 5px solid #2f5079;
+    box-shadow: 0 .5rem 5rem rgba(89, 141, 174, 0.3);
+    border-radius: 1rem;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.form-container form h3 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: #1D5698;
+
+}
+
+.form-container form .box {
+    width: 100%;
+    max-width: 40rem;
+    border-radius: .5rem;
+    background-color: white;
+    padding: 1.2rem 1.4rem;
+    font-size: 1.8rem;
+    color: #000000;
+    margin: 1rem 0;
+    border: 1px solid #1D5698;
+}
+
+.form-container form p {
+    padding-top: 1.5rem;
+    font-size: 2rem;
+    color: #1D5698;
+}
+
+.form-container form p a {
+    color: #1D5698;
+
+}
+
+.form-container form p a:hover {
+    color: #2f5079;
+}
+
+
+
+/* media queries */
+@media (max-width:991px) {
+
+    html {
+        font-size: 55%;
+    }
+}
+
+@media (max-width:450px) {
+
+    html {
+        font-size: 50%;
+    }
+
+}
+
+.login_google {
+    margin-top: 2vh;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 2vh;
+
+
+}
+
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    width: 90%;
+    max-width: 400px;
+}
+
+.alert {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+}
+
+.alert.error {
+    background-color: #e74c3c;
+}
+
+.alert.success {
+    background-color: #2ecc71;
+}

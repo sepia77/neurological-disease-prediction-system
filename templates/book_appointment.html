@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Neurological Diagnosis System</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/patient_dashboard.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('bookingModal');
+            const closeBtn = document.getElementsByClassName("close")[0];
+            const bookButtons = document.querySelectorAll('.book-btn');
+
+            // Calculate min date (2 days from now)
+            const now = new Date();
+            now.setDate(now.getDate() + 2);
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            function showModalAlert(message, type) {
+                const modalRight = document.querySelector('.modal-right');
+                const existingAlert = modalRight.querySelector('.modal-alert');
+                if (existingAlert) existingAlert.remove();
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `modal-alert ${type}`;
+                alertDiv.innerText = message;
+                alertDiv.style.padding = "10px";
+                alertDiv.style.marginBottom = "15px";
+                alertDiv.style.borderRadius = "5px";
+                alertDiv.style.fontWeight = "bold";
+
+                if (type === 'error') {
+                    alertDiv.style.backgroundColor = "#f8d7da";
+                    alertDiv.style.color = "#721c24";
+                    alertDiv.style.border = "1px solid #f5c6cb";
+                } else if (type === 'success') {
+                    alertDiv.style.backgroundColor = "#d4edda";
+                    alertDiv.style.color = "#155724";
+                    alertDiv.style.border = "1px solid #c3e6cb";
+                }
+
+                const form = document.getElementById('bookingForm');
+                modalRight.insertBefore(alertDiv, form);
+
+                setTimeout(() => {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => alertDiv.remove(), 500);
+                }, 3000);
+            }
+
+            bookButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const spec = this.getAttribute('data-spec');
+                    const qual = this.getAttribute('data-qual');
+                    const exp = this.getAttribute('data-exp');
+                    const phone = this.getAttribute('data-phone');
+                    const desc = this.getAttribute('data-desc');
+                    const img = this.getAttribute('data-img');
+
+                    document.getElementById('modal-name').innerText = name;
+                    document.getElementById('modal-spec').innerText = spec || 'Neurologist';
+                    document.getElementById('modal-qual').innerText = qual || 'N/A';
+                    document.getElementById('modal-exp').innerText = (exp || '0') + ' Years Experience';
+                    document.getElementById('modal-phone').innerText = phone || 'N/A';
+                    document.getElementById('modal-desc').innerText = desc || 'No description available.';
+                    document.getElementById('modal-img').src = img;
+
+                    const form = document.getElementById('bookingForm');
+                    form.action = "/book_appointment/" + id;
+
+                    form.querySelector('input[name="date"]').min = minDateTime;
+                    modal.style.display = "block";
+                });
+            });
+
+            const bookingForm = document.getElementById('bookingForm');
+            bookingForm.onsubmit = function (event) {
+                event.preventDefault();
+                const formData = new FormData(bookingForm);
+
+                fetch(bookingForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                    .then(result => {
+                        if (result.body.status === 'success') {
+                            showModalAlert(result.body.message, 'success');
+                            setTimeout(() => {
+                                modal.style.display = "none";
+                                bookingForm.reset();
+                            }, 1500);
+                        } else {
+                            showModalAlert(result.body.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showModalAlert("An unexpected error occurred.", 'error');
+                    });
+            };
+
+            closeBtn.onclick = () => modal.style.display = "none";
+            window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; }
+        });
+    </script>
+</head>
+
+<body style="background: #f4f7f6;">
+    <div class="navbar">
+        <div class="nav-left">
+            <ul>
+                <li><a href="{{ url_for('patient_dashboard') }}">Home</a></li>
+                <li><a href="/appointment">Book Appointment</a></li>
+                <li><a href="{{ url_for('patient_dashboard') }}#diseases-info">Diseases</a></li>
+                <li>
+                    <a href="#">Detection </a>
+                    <div class="dropdown-content">
+                        <a href="/detect_tumor">Brain Tumor</a>
+                        <a href="/detect_alzheimer">Alzheimer's</a>
+                        <a href="/detect_parkinson">Parkinson's</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li>
+                    <a href="#"><i class="ri-user-3-fill"></i> </a>
+                    <div class="dropdown-content">
+                        <a href="/history">History</a>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="margin-top: 100px; padding: 0 50px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <h2 style="text-align: center; font-size: 3rem; color:#1D5698; margin-bottom: 40px;">Our Neurological Doctors
+        </h2>
+
+        <div class="doctor-grid">
+            {% for doctor in doctors %}
+            <div class="doctor-card">
+                <img src="{{ url_for('static', filename='images/profile_pics/' + doctor.image_file) }}" alt="Doctor"
+                    class="doctor-img" onerror="this.onerror=null;this.src='/static/images/default_doctor.jpg';">
+                <h3>{{ doctor.full_name }}</h3>
+                <p class="specialization">{{ doctor.specialization or 'Neurologist' }}</p>
+                <button class="btn book-btn" data-id="{{ doctor.id }}" data-name="{{ doctor.full_name }}"
+                    data-spec="{{ doctor.specialization }}" data-qual="{{ doctor.qualification }}"
+                    data-exp="{{ doctor.experience_years }}" data-desc="{{ doctor.description }}"
+                    data-phone="{{ doctor.phone }}"
+                    data-img="{{ url_for('static', filename='images/profile_pics/' + doctor.image_file) }}">
+                    Book Appointment
+                </button>
+            </div>
+            {% else %}
+            <p style="text-align: center; width: 100%; font-size: 1.2rem; color: #666;">No approved doctors available at
+                the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close"
+                style="cursor: pointer; font-size: 2rem; position: absolute; right: 20px; top: 10px;">&times;</span>
+            <div class="modal-body">
+                <div class="modal-left">
+                    <img id="modal-img" src="" alt="Doctor" class="modal-img" style="width: 100%; border-radius: 10px;">
+                </div>
+                <div class="modal-right">
+                    <h2 id="modal-name" style="margin-bottom: 10px; color: #1D5698;"></h2>
+                    <h3 id="modal-spec" style="color: #666; margin-bottom: 20px;"></h3>
+
+                    <div class="modal-info-item"><strong>Qualification:</strong> <span id="modal-qual"></span></div>
+                    <div class="modal-info-item"><strong>Experience:</strong> <span id="modal-exp"></span></div>
+                    <div class="modal-info-item"><strong>Contact:</strong> <span id="modal-phone"></span></div>
+
+                    <div class="modal-desc" id="modal-desc" style="margin: 20px 0; line-height: 1.6; color: #555;">
+                    </div>
+
+                    <form id="bookingForm" method="POST" class="book-form">
+                        <h3 style="margin-bottom: 15px; color: #1D5698;">Book Appointment</h3>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px;">Select Date & Time:</label>
+                            <input type="datetime-local" name="date" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px;">Reason for Visit:</label>
+                            <input type="text" name="reason" placeholder="Brief reason for visit" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <button type="submit" class="btn btn-block"
+                            style="width: 100%; padding: 12px; background: #1D5698; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                            Confirm Booking
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content" id="footer">
+            <p>&copy; Neurological Disease Prediction System</p>
+            <div class="footer-links">
+                <a href="#footer">Privacy Policy</a>
+                <a href="#footer">Terms of Service</a>
+                <a href="#footer">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

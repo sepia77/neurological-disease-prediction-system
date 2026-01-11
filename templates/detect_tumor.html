@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tumor Detection System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detect.css') }}">
+
+    <!-- PDF LIB -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="nav-left">
+            <ul>
+                <li><a href="{{ url_for('patient_dashboard') }}">Home</a></li>
+                <li><a href="/appointment">Book Appointment</a></li>
+                <li><a href="{{ url_for('patient_dashboard') }}#diseases-info">Diseases</a></li>
+                <li>
+                    <a href="#">Detection</a>
+                    <div class="dropdown-content">
+                        <a href="/detect_tumor">Brain Tumor</a>
+                        <a href="/detect_alzheimer">Alzheimer's</a>
+                        <a href="/detect_parkinson">Parkinson's</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li>
+                    <a href="#"><i class="ri-user-3-fill"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/history">History</a>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- FLASH -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="margin-top:80px;">
+        {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- HEADER -->
+    <div class="container">
+        <h1>MRI Tumor Detection System</h1>
+        <p>Upload an MRI image to detect if there is a tumor</p>
+    </div>
+
+    <!-- FORM -->
+    <form method="POST" enctype="multipart/form-data">
+        <label>Select MRI Image</label>
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- RESULT -->
+    {% if result %}
+    <div class="result-container">
+        <div class="result-card">
+
+            <h2>Prediction Result</h2>
+
+            <div class="result-content">
+                <div class="result-text">
+                    <p class="prediction">Result: <strong>{{ result }}</strong></p>
+                    <p class="confidence">Confidence: <strong>{{ confidence }}</strong></p>
+                </div>
+
+                {% if file_path %}
+                <div class="result-image">
+                    <h3>MRI Scan</h3>
+                    <img src="{{ file_path }}">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-pdf" onclick="downloadPDF()">Download PDF</button>
+                <button class="btn-save" onclick="saveResult()" id="btn-save">Save Results</button>
+                <a href="/detect_tumor" class="btn-retry-new">Try Again</a>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <a href="/appointment" class="btn-book-appointment">Book Appointment</a>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: #666; font-style: italic;">
+                    <strong>Medical Disclaimer:</strong> This result is AI-generated and is for preliminary assessment
+                    only. Please consult a medical professional for an official diagnosis.
+                </p>
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ================= PDF SCRIPT (FINAL, CLINICAL-GRADE) ================= -->
+    <script>
+        function downloadPDF() {
+
+            const pdf = document.createElement('div');
+
+            /* PAGE */
+            pdf.style.width = '210mm';
+            pdf.style.padding = '10mm';
+            pdf.style.boxSizing = 'border-box';
+            pdf.style.fontFamily = 'Helvetica, Arial, sans-serif';
+
+            /* TITLE */
+            pdf.innerHTML += `
+                <h1 style="
+                    text-align:center;
+                    font-size:26px;
+                    margin-bottom:15px;
+                    color:#1D5698;">
+                    MRI Tumor Detection Report
+                </h1>
+            `;
+
+            /* RESULTS */
+            const pred = document.querySelector('.prediction')?.innerText || 'N/A';
+            const conf = document.querySelector('.confidence')?.innerText || 'N/A';
+
+            pdf.innerHTML += `
+                <div style="
+                    border:1px solid #ddd;
+                    background:#f8f9fa;
+                    padding:12px;
+                    border-radius:6px;
+                    margin-bottom:15px;">
+                    <p style="font-size:16px; margin:6px 0;"><strong>${pred}</strong></p>
+                    <p style="font-size:15px; margin:6px 0;">${conf}</p>
+                </div>
+            `;
+
+            /* ===== FIXED IMAGE FRAME (SMALLER, CONSISTENT) ===== */
+            const originalImg = document.querySelector('.result-card img');
+            if (originalImg) {
+
+                const frame = document.createElement('div');
+                frame.style.width = '150mm';
+                frame.style.height = '170mm';
+                frame.style.margin = '0 auto 15px auto';
+                frame.style.border = '1px solid #ccc';
+                frame.style.display = 'flex';
+                frame.style.alignItems = 'center';
+                frame.style.justifyContent = 'center';
+                frame.style.background = '#ffffff';
+
+                const img = document.createElement('img');
+                img.src = originalImg.src;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+
+                frame.appendChild(img);
+                pdf.appendChild(frame);
+            }
+
+            /* ===== MEDICAL DISCLAIMER ===== */
+            pdf.innerHTML += `
+                <p style="
+                    font-size:11px;
+                    color:#666;
+                    text-align:center;
+                    margin-top:20px;
+                    border-top:1px solid #ddd;
+                    padding-top:10px;">
+                    <strong>Medical Disclaimer:</strong>
+                    This result is AI-generated and is for preliminary assessment only.
+                    Please consult a medical professional for an official diagnosis.
+                </p>
+            `;
+
+            /* PDF OPTIONS */
+            html2pdf().set({
+                margin: 0,
+                filename: 'MRI_Scan_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 1.4,
+                    useCORS: true,
+                    scrollY: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            }).from(pdf).save();
+        }
+
+        // Save scan result to history
+        function saveResult() {
+            const saveBtn = document.getElementById('btn-save');
+
+            // Get the result data from the page
+            const result = document.querySelector('.prediction strong')?.innerText || '';
+            const confidence = document.querySelector('.confidence strong')?.innerText || '';
+            const imagePath = document.querySelector('.result-card img')?.src || '';
+
+            // Extract just the filename from the full URL
+            const imageFilename = imagePath.split('/').pop();
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('scan_type', 'Brain Tumor');
+            formData.append('result', result);
+            formData.append('confidence', confidence);
+            formData.append('image_path', '/uploads/' + imageFilename);
+
+            // Disable button to prevent double-clicking
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Saving...';
+
+            // Send to backend
+            fetch('/save_scan', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        saveBtn.innerText = 'Saved ✓';
+                        saveBtn.style.backgroundColor = '#28a745';
+                    } else {
+                        alert('Error: ' + data.message);
+                        saveBtn.disabled = false;
+                        saveBtn.innerText = 'Save Results';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to save result. Please try again.');
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = 'Save Results';
+                });
+        }
+    </script>
+
+    <footer>
+        <div class="footer-content" id="footer">
+            <p>&copy; Neurological Disease Prediction System</p>
+            <div class="footer-links">
+                <a href="#footer">Privacy Policy</a>
+                <a href="#footer">Terms of Service</a>
+                <a href="#footer">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

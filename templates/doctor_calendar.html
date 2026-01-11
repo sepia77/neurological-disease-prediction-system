@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Doctor</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/doctor_dashboard.css') }}">
+    <style>
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eee;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var eventsData = JSON.parse(calendarEl.getAttribute('data-events') || '[]');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: eventsData,
+                height: 'auto'
+            });
+            calendar.render();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Doctor Dashboard</h2>
+        <ul>
+            <li><a href="{{ url_for('doctor_dashboard') }}">Overview</a></li>
+            <li><a href="{{ url_for('doctor_requests') }}">Appointment Requests</a></li>
+            <li><a href="{{ url_for('doctor_calendar') }}" class="active">Calendar</a></li>
+            <li><a href="{{ url_for('doctor_profile') }}">User Profile</a></li>
+            <li style="margin-top: 50px;"><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h2 style="margin-bottom: 20px;">Appointment Calendar</h2>
+        <div id='calendar' data-events='{{ events|safe }}'></div>
+    </div>
+</body>
+
+</html>
